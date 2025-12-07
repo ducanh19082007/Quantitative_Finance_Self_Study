@@ -14,6 +14,8 @@ install_requires = [
     "notebook>=6.1.5",
     "ipywidgets>=7.6.3",
     "ipykernel>=5.3.4",
+    "tensorflow",
+    "scikit-learn"
 ]
 
 
