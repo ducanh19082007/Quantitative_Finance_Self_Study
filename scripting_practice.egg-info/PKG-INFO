@@ -1,29 +1,13 @@
 Metadata-Version: 2.4
 Name: scripting_practice
-Version: 0.1.1
+Version: 0.1.0
 Author: ducanh19082007
 Requires-Python: >=3.7
 Requires-Dist: requests>=2.25.1
 Requires-Dist: numpy>=1.19.5
 Requires-Dist: pandas>=1.1.5
-Requires-Dist: scipy>=1.5.4
 Requires-Dist: matplotlib>=3.3.4
-Requires-Dist: scikit-learn>=0.24.1
-Requires-Dist: tqdm>=4.56.0
-Requires-Dist: yfinance>=0.1.63
-Requires-Dist: beautifulsoup4>=4.9.3
-Requires-Dist: lxml>=4.6.2
-Requires-Dist: pytest>=6.2.1
-Requires-Dist: pytest-cov>=2.11.1
-Requires-Dist: setuptools>=50.3.2
 Requires-Dist: seaborn>=0.11.1
-Requires-Dist: sklearn-pandas>=2.0.0
-Requires-Dist: scikit-learn>=0.24.1
-Requires-Dist: tensorflow>=2.4.1
-Requires-Dist: keras>=2.4.3
-Requires-Dist: torch>=1.7.1
-Requires-Dist: torchvision>=0.8.2
-Requires-Dist: transformers>=4.3.3
 Provides-Extra: jupyter
 Requires-Dist: notebook; extra == "jupyter"
 Requires-Dist: jupyterlab; extra == "jupyter"
