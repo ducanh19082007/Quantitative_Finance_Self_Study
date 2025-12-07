@@ -9,6 +9,11 @@ install_requires = [
     "pandas>=1.1.5",
     "matplotlib>=3.3.4",
     "seaborn>=0.11.1",
+    "IPython>=7.16.1",
+    "jupyterlab>=3.0.14",
+    "notebook>=6.1.5",
+    "ipywidgets>=7.6.3",
+    "ipykernel>=5.3.4",
 ]
 
 
@@ -47,7 +52,7 @@ extras = {
 
 setup(
     name="scripting_practice",
-    version="0.1.0",
+    version="0.1.1",
     packages=find_packages(),
     install_requires=install_requires,
     extras_require=extras,
