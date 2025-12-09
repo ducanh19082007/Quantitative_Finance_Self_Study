@@ -1,39 +1,29 @@
 Metadata-Version: 2.4
 Name: scripting_practice
-Version: 0.1.0
+Version: 0.1.2
 Author: ducanh19082007
-Requires-Python: >=3.7
-Requires-Dist: requests>=2.25.1
+Requires-Python: >=3.9
 Requires-Dist: numpy>=1.19.5
 Requires-Dist: pandas>=1.1.5
 Requires-Dist: matplotlib>=3.3.4
+Requires-Dist: scikit-learn>=1.0.0
+Requires-Dist: tensorflow>=2.10.0
+Requires-Dist: gym>=0.26.0
+Requires-Dist: gymnasium>=0.29.0
+Requires-Dist: stable-baselines3>=2.0.0
 Requires-Dist: seaborn>=0.11.1
-Provides-Extra: jupyter
-Requires-Dist: notebook; extra == "jupyter"
-Requires-Dist: jupyterlab; extra == "jupyter"
-Requires-Dist: ipywidgets; extra == "jupyter"
-Requires-Dist: jupyterlab_widgets; extra == "jupyter"
-Requires-Dist: ipykernel; extra == "jupyter"
+Requires-Dist: tqdm>=4.60.0
+Requires-Dist: opencv-python>=4.5.0
+Provides-Extra: rl
+Requires-Dist: gym[box2d]; extra == "rl"
+Requires-Dist: ale-py; extra == "rl"
+Requires-Dist: pygame; extra == "rl"
+Requires-Dist: shimmy; extra == "rl"
 Provides-Extra: dev
 Requires-Dist: black; extra == "dev"
 Requires-Dist: flake8; extra == "dev"
 Requires-Dist: pytest; extra == "dev"
-Requires-Dist: pytest-cov; extra == "dev"
 Requires-Dist: mypy; extra == "dev"
-Requires-Dist: isort; extra == "dev"
-Provides-Extra: codespaces
-Requires-Dist: ipykernel; extra == "codespaces"
-Requires-Dist: jedi; extra == "codespaces"
-Requires-Dist: debugpy; extra == "codespaces"
-Requires-Dist: jupyterlab; extra == "codespaces"
-Requires-Dist: notebook; extra == "codespaces"
-Requires-Dist: rich; extra == "codespaces"
-Provides-Extra: full
-Requires-Dist: opencv-contrib-python; extra == "full"
-Requires-Dist: albumentations; extra == "full"
-Requires-Dist: imgaug; extra == "full"
-Requires-Dist: seaborn; extra == "full"
-Requires-Dist: tqdm; extra == "full"
 Dynamic: author
 Dynamic: provides-extra
 Dynamic: requires-dist

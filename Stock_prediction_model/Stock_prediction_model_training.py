@@ -1,136 +1,164 @@
-import tensorflow as tf
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import csv
-from IPython.display import display
-from pathlib import Path
 import os
+from pathlib import Path
+from IPython.display import display
+import seaborn as sns
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 class Agent:
-    def __init__(self, epoch):
+    def __init__(self, epoch: int = 0):
         self.epoch = epoch
 
     @staticmethod
-    def visualization_(file_name: str):
-        # Build path to CSV
-        path = Path(__file__).parent / "csv_dataset" / file_name
+    def visualization(file_name: str):
+        """Plot and save all numeric columns from CSV"""
 
-        # Read CSV
-        df = pd.read_csv(path)
+        # === Build safe file path ===
+        csv_path = Path(__file__).resolve().parent.parent / "csv_dataset" / file_name
+        if not csv_path.exists():
+            raise FileNotFoundError(f"File not found: {csv_path}")
 
-        # Display first 5 rows
-        display(df.head(5))
+        # === Load data ===
+        df = pd.read_csv(csv_path)
+        display(df.head())
 
-        # Plot the 'Close' 
+        # Clean column names
         df.columns = df.columns.str.strip()
-        if "Close" in df.columns:
+
+        # === Output folder ===
+        output_folder = Path(__file__).parent / f"{file_name}_plots"
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        # === Plot all numeric columns ===
+        for col in df.columns:
+            if not np.issubdtype(df[col].dtype, np.number):
+                continue
+
             plt.figure(figsize=(10, 5))
-            plt.plot(df["Close"], label="Close Price")
-            plt.title("TSLA Close Price")
+            plt.plot(df[col])
+            plt.title(f"{col} Over Time")
             plt.xlabel("Index")
-            plt.ylabel("Price")
-            plt.legend()
+            plt.ylabel(col)
+
+            output_path = output_folder / f"{col}.png"
+            plt.savefig(output_path, dpi=300, bbox_inches="tight")
             plt.show()
+            plt.close()
+
+    @staticmethod
+    def convert_to_csv(input_file: str, output_name: str):
+        """
+        Converts non-CSV files into CSV and saves to csv_dataset.
+        Currently supports Excel (.xlsx).
+        """
+        input_path = Path(input_file)
+
+        if not input_path.exists():
+            raise FileNotFoundError(f"File not found: {input_path}")
+
+        output_folder = Path(__file__).resolve().parent.parent / "csv_dataset"
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        if input_path.suffix in [".xlsx", ".xls"]:
+            df = pd.read_excel(input_path)
         else:
-            print("No 'Close' column found in CSV.")
-            
+            raise ValueError("Unsupported file type for conversion")
+
+        output_path = output_folder / f"{output_name}.csv"
+        df.to_csv(output_path, index=False)
+
+        print(f"Saved CSV to: {output_path}")
+
     @staticmethod
-    def change_to_csv(other_file_name: str) -> pd.DataFrame:
-        '''this will chance other file but csv into csv itself, and put into the folder csv_dataset'''
-    
-    @staticmethod
-    def PCA_convertion(file_name:str, n_components: int = 2) -> pd.DataFrame:
-        from sklearn.decomposition import PCA
-        from sklearn.preprocessing import StandardScaler
-        from sklearn.pipeline import Pipeline
-        
-        path = Path(__file__).parent / "csv_dataset" / file_name
-        
-        df = pd.read_csv(path)
-        
+    def pca_conversion(file_name: str, n_components: int = 2):
+        """Run PCA and generate plots + dataset"""
+
+        # === Load CSV ===
+        csv_path = Path(__file__).resolve().parent.parent / "csv_dataset" / file_name
+        if not csv_path.exists():
+            raise FileNotFoundError(f"File not found: {csv_path}")
+
+        df = pd.read_csv(csv_path)
         df.columns = df.columns.str.strip()
-        
+
+        # === Extract numeric data (skip first column like Date) ===
         df_num = df.iloc[:, 1:]
-        
-        pipeline_ = Pipeline([
+
+        # === PCA Pipeline ===
+        pipeline = Pipeline([
             ("scaler", StandardScaler()),
-            ("PCA", PCA(n_components=n_components))
+            ("pca", PCA(n_components=n_components))
         ])
-        
-        principal_com = pipeline_.fit_transform(df_num)
-        
+
+        principal_comps = pipeline.fit_transform(df_num)
+
         pca_df = pd.DataFrame(
-            principal_com, columns=[f"PC{i+1}" for i in range(n_components)],
+            principal_comps,
+            columns=[f"PC{i+1}" for i in range(n_components)]
         )
-        
+
         display(pca_df.head())
-        
-        OUTPUT_FOLDER = Path(__file__).parent /  f"{file_name}_PCA_Dataset"
-        os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-        output_path = os.path.join(OUTPUT_FOLDER, f"{file_name}_PCA_implemented.csv")
-        pca_df.to_csv(output_path, index = False)
-        
-        import seaborn as sns
 
-        # Assume pca_df is your PCA DataFrame with PC1 and PC2
-        # For demonstration, let's say we have:
-        # pca_df = pd.DataFrame(principal_components, columns=["PC1", "PC2"])
-        import seaborn as sns
+        # === Save PCA CSV ===
+        dataset_folder = Path(__file__).parent / f"{file_name}_PCA_Dataset"
+        dataset_folder.mkdir(parents=True, exist_ok=True)
 
-        OUTPUT_FOLDER = Path(__file__).parent / f"{file_name}_plot"
-        os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+        pca_csv_path = dataset_folder / f"{file_name}_PCA.csv"
+        pca_df.to_csv(pca_csv_path, index=False)
 
+        # === Plot folder ===
+        plot_folder = Path(__file__).parent / f"{file_name}_plots"
+        plot_folder.mkdir(parents=True, exist_ok=True)
+
+        # --- Scatter + KDE plot ---
         plt.figure(figsize=(10, 6))
         sns.kdeplot(
-            x=pca_df["PC1"], 
-            y=pca_df["PC2"], 
+            x=pca_df["PC1"],
+            y=pca_df["PC2"],
             fill=True,
-            cmap="Blues", 
+            cmap="Blues",
             thresh=0.05,
-            levels=15,
-            alpha=0.5
+            levels=15
         )
         sns.scatterplot(
-            x="PC1", 
-            y="PC2", 
-            data=pca_df, 
-            color="red", 
-            s=40, 
-            alpha=0.6
+            x="PC1",
+            y="PC2",
+            data=pca_df,
+            s=40
         )
-        plt.title("PCA of Stock Data: Scatter + Density")
 
-        # Save first figure BEFORE showing
-        output_path_1 = os.path.join(OUTPUT_FOLDER, f"{file_name}_PCA_scatter.png")
-        plt.savefig(output_path_1, dpi=300, bbox_inches="tight")
-        plt.show()
-        plt.close()  # close to avoid overlap
+        plt.title("PCA Scatter + Density")
 
-        # 2️⃣ Line plot for PC1 over time
+        scatter_path = plot_folder / f"{file_name}_PCA_scatter.png"
+        plt.savefig(scatter_path, dpi=300, bbox_inches="tight")
+        plt.close()
+
+        # --- PC1 Line Plot ---
         plt.figure(figsize=(12, 5))
-        sns.lineplot(data=pca_df["PC1"], label="PC1", color="blue")
-        plt.axhline(pca_df["PC1"].mean(), color="green", linestyle="--", label="Mean")
-        plt.axhline(pca_df["PC1"].max(), color="red", linestyle=":", label="Max")
-        plt.axhline(pca_df["PC1"].min(), color="orange", linestyle=":", label="Min")
-        plt.title("PC1 Evolution Over Time with Min/Max/Mean")
+        sns.lineplot(data=pca_df["PC1"], label="PC1")
+        plt.axhline(pca_df["PC1"].mean(), linestyle="--", label="Mean")
+        plt.axhline(pca_df["PC1"].max(), linestyle=":", label="Max")
+        plt.axhline(pca_df["PC1"].min(), linestyle=":", label="Min")
+
+        plt.title("PC1 Over Time")
         plt.xlabel("Index")
         plt.ylabel("PC1 Value")
         plt.legend()
 
-        # Save second figure BEFORE showing
-        output_path_2 = os.path.join(OUTPUT_FOLDER, f"{file_name}_PC1_line.png")
-        plt.savefig(output_path_2, dpi=300, bbox_inches="tight")
+        line_path = plot_folder / f"{file_name}_PC1_line.png"
+        plt.savefig(line_path, dpi=300, bbox_inches="tight")
         plt.show()
         plt.close()
 
-        print("\nExplained variance ratio:")
-        #print(pipeline_.named_steps["pca"].explained_variance_ratio_)
-
-        
+    def agent_in_action(self):
+        """Agent execution placeholder"""
+        pass
 
 
 if __name__ == "__main__":
-    Agent.visualization_("TSLA.csv")
-    Agent.PCA_convertion("TSLA.csv", 2)
+    Agent.visualization("TSLA.csv")
+    Agent.pca_conversion("TSLA.csv", 2)

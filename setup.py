@@ -4,61 +4,48 @@ import os
 os.environ.setdefault("MY_PACKAGE_SETTING", "default_value")    
 
 install_requires = [
-    "requests>=2.25.1",
+    # Core
     "numpy>=1.19.5",
     "pandas>=1.1.5",
     "matplotlib>=3.3.4",
+
+    # ML / DL
+    "scikit-learn>=1.0.0",
+    "tensorflow>=2.10.0",
+
+    # Reinforcement Learning
+    "gym>=0.26.0",
+    "gymnasium>=0.29.0",
+    "stable-baselines3>=2.0.0",
+
+    # Visualization + utils
     "seaborn>=0.11.1",
-    "IPython>=7.16.1",
-    "jupyterlab>=3.0.14",
-    "notebook>=6.1.5",
-    "ipywidgets>=7.6.3",
-    "ipykernel>=5.3.4",
-    "tensorflow",
-    "scikit-learn"
+    "tqdm>=4.60.0",
+    "opencv-python>=4.5.0",
 ]
 
-
 extras = {
-    "jupyter": [
-        "notebook",
-        "jupyterlab",
-        "ipywidgets",
-        "jupyterlab_widgets",
-        "ipykernel",
+    "rl": [
+        "gym[box2d]",
+        "ale-py",
+        "pygame",
+        "shimmy",
     ],
     "dev": [
         "black",
         "flake8",
         "pytest",
-        "pytest-cov",
         "mypy",
-        "isort",
-    ],
-    "codespaces": [
-        "ipykernel",
-        "jedi",
-        "debugpy",
-        "jupyterlab",
-        "notebook",
-        "rich",
-    ],
-    "full": [
-        "opencv-contrib-python",
-        "albumentations",
-        "imgaug",
-        "seaborn",
-        "tqdm",
     ],
 }
 
 setup(
     name="scripting_practice",
-    version="0.1.1",
+    version="0.1.2",
     packages=find_packages(),
     install_requires=install_requires,
     extras_require=extras,
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     author="ducanh19082007",
     include_package_data=True,
 )
