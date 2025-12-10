@@ -137,7 +137,8 @@ class Mean_Reversion:
 
 if __name__ == "__main__":
     FILE_NAME = "TSLA.csv"
-    PRICE_COLUMN = "Close"
+    PRICE_COLUMN = "High"
 
-    bot = Mean_Reversion(FILE_NAME)
-    bot.run_and_plot_strategy(PRICE_COLUMN)
+    for i in ["AMD.csv", "GOOG.csv", "TSLA.csv", "oil.csv"]:
+        bot = Mean_Reversion(i)
+        bot.run_and_plot_strategy(PRICE_COLUMN)
